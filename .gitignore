@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+*.so
+*.zip
+sklad
+src/skl-gen/img/
+src/kuv/kuv-img/
+*.json
+*.xml
+env
