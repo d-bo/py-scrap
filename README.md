@@ -2,6 +2,7 @@
 
 
 [![CircleCI](https://circleci.com/gh/d-bo/py-scrap/tree/master.svg?style=svg)](https://circleci.com/gh/d-bo/py-scrap/tree/master)
+[![Build Status](https://travis-ci.org/d-bo/py-scrap.svg?branch=master)](https://travis-ci.org/d-bo/py-scrap)
 
 ```sh
 # edit ~/.profile
