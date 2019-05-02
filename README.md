@@ -1,5 +1,8 @@
 # py-scrap
 
+
+[![CircleCI](https://circleci.com/gh/d-bo/py-scrap/tree/master.svg?style=svg)](https://circleci.com/gh/d-bo/py-scrap/tree/master)
+
 ```sh
 # edit ~/.profile
 export KUV_BASE_URL=""
