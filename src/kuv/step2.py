@@ -60,6 +60,9 @@ async def fetch(**kwargs):
             headers=headers, cookies=cookies, data=_data)
         if response.status_code == 200:
             return response
+        else:
+            raise Exception('Error response status code: {}'
+                            .format(response.status_code))
     except:  # noqa: E722 # pylint: disable=bare-except
         print("ERR REQUEST PROD")
         kwargs['dbp'].insert_one({'id': kwargs['group_id']})
@@ -73,12 +76,15 @@ async def parse(resp, dbi):
     for key, value in enumerate(resp['items']):
         key = key  # flake8 F841
         task = {'url': value['url']}
-        double = dbi.find_one(task)
-        if double is None:
-            dbi.insert_one(value)
-            inserted += 1
-        else:
-            passed += 1
+        try:
+            double = dbi.find_one(task)
+            if double is None:
+                dbi.insert_one(value)
+                inserted += 1
+            else:
+                passed += 1
+        except:
+            pass
     print("inserted: ", inserted, "passed: ", passed)
 
 
@@ -89,6 +95,7 @@ async def main(**kwargs):
     page = 1
     previous = ''
     next_one = 'initial'
+    parse_res = False
     while previous != next_one:
         resp = await fetch(group_id=kwargs['group_id'],
                            base_group_id=kwargs['base_group_id'],
@@ -98,9 +105,10 @@ async def main(**kwargs):
         if previous == next_one:
             break
         print("PAGE", page, "MONGO CURSOR", kwargs['position'])
-        await parse(resp.json(), kwargs['dbi'])
+        parse_res = await parse(resp.json(), kwargs['dbi'])
         previous, next_one = next_one, ''
         page += 1
+    return parse_res
 
 
 def evloop(group_id, base_group_id, counter):

@@ -30,11 +30,13 @@ async def parse_response(txt, url):
                 task = {'group': group['group'],
                         'base_group': group['v-bind:base_group']}
             else:
+                raise Exception('Can\'t find v-bind:base_group')
+                """
                 purl = url.split('/')[4]
                 purl = ''.join(i for i in purl if i.isdigit())
                 print("NOT PAGED", url)
-                if DBP is not None: DBP.insert_one({'url': url})
                 task = {'group': url, 'base_group': False, 'url': purl}
+                """
 
         try:
             double = DB.find_one(task)

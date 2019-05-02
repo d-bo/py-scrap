@@ -103,6 +103,7 @@ async def main(**kwargs):
 
     """ Request product url """
 
+    out = False
     dbp = MongoClient().kuv.not_paged
     dbc = MongoClient().kuv.products_1
     print('{}{}'.format(KUV_BASE_URL, kwargs['url']),
@@ -110,13 +111,19 @@ async def main(**kwargs):
     try:
         response = requests.get('{}{}'.format(KUV_BASE_URL, kwargs['url']))
     except:  # noqa: E722 # pylint: disable=bare-except
-        print("ERR REQUEST PROD")
+        raise Exception("ERR REQUEST PROD")
         dbp.insert_one({'url': kwargs['url']})
 
-    if response.status_code == 200:
-        await parse(response, dbc, kwargs['url'])
-    else:
-        print("\t404 Not found")
+    try:
+        if response.status_code == 200:
+            out = await parse(response, dbc, kwargs['url'])
+        else:
+            raise Exception('Status code either than 200: {}'
+                            .format(response.status_code))
+    except:
+        pass
+
+    return out
 
 
 def evloop(product_url, counter):
