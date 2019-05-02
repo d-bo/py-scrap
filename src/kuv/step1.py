@@ -33,15 +33,17 @@ async def parse_response(txt, url):
                 purl = url.split('/')[4]
                 purl = ''.join(i for i in purl if i.isdigit())
                 print("NOT PAGED", url)
-                DBP.insert_one({'url': url})
+                if DBP is not None: DBP.insert_one({'url': url})
                 task = {'group': url, 'base_group': False, 'url': purl}
 
-        double = DB.find_one(task)
-
-        if double is None:
-            DB.insert_one(task)
-        else:
+        try:
+            double = DB.find_one(task)
+            if double is None:
+                DB.insert_one(task)
+        except:
             pass
+
+    return task
 
 
 async def main(url='{}/catalog'.format(KUV_BASE_URL)):
@@ -49,15 +51,21 @@ async def main(url='{}/catalog'.format(KUV_BASE_URL)):
     """ Get product page recursive """
 
     print("URL: ", url)
+    parsed = None
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as resp:
                 if resp.status == 200:
                     txt = await resp.text()
-                    await parse_response(txt, url)
+                    parsed = await parse_response(txt, url)
     except:  # noqa: E722 # pylint: disable=bare-except
-        print('ERR AT: {}'.format(url))
-        DBP.insert_one({'err': url})
+        raise Exception('ERR AT: {}'.format(url))
+        try:
+            DBP.insert_one({'err': url})
+        except:
+            pass
+
+    return parsed
 
 
 if __name__ == '__main__':
