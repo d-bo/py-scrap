@@ -16,9 +16,11 @@ async def test_step1():
 
 @pytest.mark.asyncio
 async def test_step2():
-    await step2.main(group_id=8964, base_group_id=8964,
-                     position=1, dbi=False, dbp=False)
+    res = await step2.main(group_id=8964, base_group_id=8964,
+                           position=1, dbi=False, dbp=False)
+    assert(isinstance(res, list))
 
 @pytest.mark.asyncio
 async def test_step3():
-    assert False == await step3.main(url='/catalog/9673/product-60255/', position=1)
+    res = await step3.main(url='/catalog/9673/product-60255/', position=1)
+    # TODO: res assert

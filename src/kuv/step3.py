@@ -67,7 +67,6 @@ async def parse(resp, dbc, url):
         path = _item['src'].replace(KUV_REPLACE_URL, '')
         path = path.replace("/", '.')
         path = "kuv-img/main%s" % path
-        print(path)
         urllib.request.urlretrieve("{}{}".format(KUV_BASE_URL, _item['src'])
                                    .replace(KUV_REPLACE_URL, ''), path)
         imgs.append(path)
@@ -97,6 +96,8 @@ async def parse(resp, dbc, url):
         print(dbc.update({'url': url}, {"$set": summary}, upsert=True))
     except:  # noqa: E722 # pylint: disable=bare-except
         print("ERROR MONGO UPDATE")
+    finally:
+        return summary
 
 
 async def main(**kwargs):
@@ -138,6 +139,8 @@ if __name__ == '__main__':
 
     DB = MongoClient().kuv.products_1
     CURSOR = DB.find({"suggested": {"$exists": False}})
+    if not CURSOR.count():
+        raise Exception('No results. First run step2.')
     RESULTS = []
     i = 1
     with Pool() as pool:

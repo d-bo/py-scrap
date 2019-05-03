@@ -86,6 +86,7 @@ async def parse(resp, dbi):
         except:
             pass
     print("inserted: ", inserted, "passed: ", passed)
+    return resp['items']
 
 
 async def main(**kwargs):
@@ -127,6 +128,8 @@ if __name__ == '__main__':
 
     DB = MongoClient().kuv.group_ids_alter
     CURSOR = DB.find()
+    if not CURSOR.count():
+        raise Exception('No results. First run step1.')
     RESULTS = []
     i = 1
     with Pool() as pool:
